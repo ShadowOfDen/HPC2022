@@ -4,8 +4,8 @@ void viewGraph(CvPlot::Axes& axes, Mat& mat, vector<double>& in, vector<double>&
 {
     string temp = "";
 
-    axes.create<CvPlot::Series>(in, out, color);  // Отрисывываем левый канал
-    mat = axes.render(height, width);  // Создание изображения для вывода
+    axes.create<CvPlot::Series>(in, out, color);  // РћС‚СЂРёСЃС‹РІС‹РІР°РµРј Р»РµРІС‹Р№ РєР°РЅР°Р»
+    mat = axes.render(height, width);  // РЎРѕР·РґР°РЅРёРµ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ РґР»СЏ РІС‹РІРѕРґР°
 
     if (ml == 1)
     {
@@ -14,28 +14,28 @@ void viewGraph(CvPlot::Axes& axes, Mat& mat, vector<double>& in, vector<double>&
         case 1:
 
             if (interactive == 1)
-                CvPlot::show(Name, axes);  // Отображаем график
+                CvPlot::show(Name, axes);  // РћС‚РѕР±СЂР°Р¶Р°РµРј РіСЂР°С„РёРє
             else
-                imshow(Name, mat);  // Вывод изображения на экран
+                imshow(Name, mat);  // Р’С‹РІРѕРґ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ РЅР° СЌРєСЂР°РЅ
 
             break;
 
         case 2:
 
-            temp = Name + extension;  // Добавим расширение для сохранения
-            imwrite(temp, mat);  // Сохраняем изображение
+            temp = Name + extension;  // Р”РѕР±Р°РІРёРј СЂР°СЃС€РёСЂРµРЅРёРµ РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ
+            imwrite(temp, mat);  // РЎРѕС…СЂР°РЅСЏРµРј РёР·РѕР±СЂР°Р¶РµРЅРёРµ
 
             break;
 
         case 3:
 
             if (interactive == 1)
-                CvPlot::show(Name, axes);  // Отображаем график
+                CvPlot::show(Name, axes);  // РћС‚РѕР±СЂР°Р¶Р°РµРј РіСЂР°С„РёРє
             else
-                imshow(Name, mat);  // Вывод изображения на экран
+                imshow(Name, mat);  // Р’С‹РІРѕРґ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ РЅР° СЌРєСЂР°РЅ
 
-            temp = Name + extension;  // Добавим расширение для сохранения
-            imwrite(temp, mat);  // Сохраняем изображение
+            temp = Name + extension;  // Р”РѕР±Р°РІРёРј СЂР°СЃС€РёСЂРµРЅРёРµ РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ
+            imwrite(temp, mat);  // РЎРѕС…СЂР°РЅСЏРµРј РёР·РѕР±СЂР°Р¶РµРЅРёРµ
 
             break;
         }
@@ -44,39 +44,39 @@ void viewGraph(CvPlot::Axes& axes, Mat& mat, vector<double>& in, vector<double>&
 
 void viewGraph(wav_header_t& header, vector<double>& in, vector<double>& out1, vector<double>& out2, string Name, int modeP)
 {
-    CvPlot::Axes axes = CvPlot::makePlotAxes();  // Создаем поверхность
-    axes = CvPlot::makePlotAxes();  // Создаем поверхность
-    Mat mat;  // Поверхность для вывода
+    CvPlot::Axes axes = CvPlot::makePlotAxes();  // РЎРѕР·РґР°РµРј РїРѕРІРµСЂС…РЅРѕСЃС‚СЊ
+    axes = CvPlot::makePlotAxes();  // РЎРѕР·РґР°РµРј РїРѕРІРµСЂС…РЅРѕСЃС‚СЊ
+    Mat mat;  // РџРѕРІРµСЂС…РЅРѕСЃС‚СЊ РґР»СЏ РІС‹РІРѕРґР°
 
-    string name = "";  // Переменная для хранения названия файла
+    string name = "";  // РџРµСЂРµРјРµРЅРЅР°СЏ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РЅР°Р·РІР°РЅРёСЏ С„Р°Р№Р»Р°
 
-    // Добавляем к названию файла приписку о процессоре
+    // Р”РѕР±Р°РІР»СЏРµРј Рє РЅР°Р·РІР°РЅРёСЋ С„Р°Р№Р»Р° РїСЂРёРїРёСЃРєСѓ Рѕ РїСЂРѕС†РµСЃСЃРѕСЂРµ
     if (modeP == 1) name = Name + "_CPU";
     else if (modeP == 2) name = Name + "_GPU";
     else name = Name;
 
     if (header.numChannels == 1)
     {
-        viewGraph(axes, mat, in, out1, "-r", name, 1);  // Отрисовываем одно изображение
+        viewGraph(axes, mat, in, out1, "-r", name, 1);  // РћС‚СЂРёСЃРѕРІС‹РІР°РµРј РѕРґРЅРѕ РёР·РѕР±СЂР°Р¶РµРЅРёРµ
     }
     else
     {
-        if (multichannel == 0)  // На разных изображениях
+        if (multichannel == 0)  // РќР° СЂР°Р·РЅС‹С… РёР·РѕР±СЂР°Р¶РµРЅРёСЏС…
         {
-            CvPlot::Axes axes2 = CvPlot::makePlotAxes();  // Создаем поверхность
-            axes2 = CvPlot::makePlotAxes();  // Создаем поверхность
-            Mat mat2;  // Поверхность для вывода
+            CvPlot::Axes axes2 = CvPlot::makePlotAxes();  // РЎРѕР·РґР°РµРј РїРѕРІРµСЂС…РЅРѕСЃС‚СЊ
+            axes2 = CvPlot::makePlotAxes();  // РЎРѕР·РґР°РµРј РїРѕРІРµСЂС…РЅРѕСЃС‚СЊ
+            Mat mat2;  // РџРѕРІРµСЂС…РЅРѕСЃС‚СЊ РґР»СЏ РІС‹РІРѕРґР°
 
             string temp = name + "_1";
-            viewGraph(axes, mat, in, out1, "-r", temp, 1);  // Отрисовываем первое изображение
+            viewGraph(axes, mat, in, out1, "-r", temp, 1);  // РћС‚СЂРёСЃРѕРІС‹РІР°РµРј РїРµСЂРІРѕРµ РёР·РѕР±СЂР°Р¶РµРЅРёРµ
 
             temp = name + "_2";
-            viewGraph(axes2, mat2, in, out2, "-g", temp, 1);  // Отрисовываем второе изображение
+            viewGraph(axes2, mat2, in, out2, "-g", temp, 1);  // РћС‚СЂРёСЃРѕРІС‹РІР°РµРј РІС‚РѕСЂРѕРµ РёР·РѕР±СЂР°Р¶РµРЅРёРµ
         }
-        else  // На одинаковом
+        else  // РќР° РѕРґРёРЅР°РєРѕРІРѕРј
         {
-            viewGraph(axes, mat, in, out1, "-r", name, 0);  // Отрисовываем первый график
-            viewGraph(axes, mat, in, out2, "-g", name, 1);  // Отрисовываем второй график
+            viewGraph(axes, mat, in, out1, "-r", name, 0);  // РћС‚СЂРёСЃРѕРІС‹РІР°РµРј РїРµСЂРІС‹Р№ РіСЂР°С„РёРє
+            viewGraph(axes, mat, in, out2, "-g", name, 1);  // РћС‚СЂРёСЃРѕРІС‹РІР°РµРј РІС‚РѕСЂРѕР№ РіСЂР°С„РёРє
         }
     }
 }
