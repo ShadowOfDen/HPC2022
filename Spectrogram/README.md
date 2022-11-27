@@ -36,4 +36,24 @@
 
 Ниже представлен пример работы программы (за основу был взял написанный заранее для теста звук, длительностью 2сек "test". А также взятый трек с интернет ресурсов "The_Rebel_Path" длительностью 4.10 мин.
 
+```diff
+- Выполнение программы проводилось с одинаковыми параметрами: 3, 0, 1, 0, 2, 1280x720, .bmp.
+```
 
+Форма сигнала звука test (красный - левый канал, зеленый - правый канал)
+![SoundGraph](https://user-images.githubusercontent.com/31400073/204161159-e9f3acfe-7834-4f7d-9ff7-e0741c4fdbc3.png)
+Спектрограмма через CPU
+![Spectrogram_CPU](https://user-images.githubusercontent.com/31400073/204161167-92f4af8b-b3a6-41fb-97da-8a1d370dcc60.png)
+Спектрограмма через GPU
+![Spectrogram_GPU](https://user-images.githubusercontent.com/31400073/204161171-78103d3a-5bac-49a0-a04c-d799d90581ba.png)
+Вывод в консоль
+![console_no_image](https://user-images.githubusercontent.com/31400073/204161287-506e29a1-4687-43a8-acd4-a6199c7e8c4a.jpg)
+
+Форма сигнала звука The_Rebel_Path (красный - левый канал, зеленый - правый канал)
+![SoundGraph](https://user-images.githubusercontent.com/31400073/204161241-111087fa-32ff-440b-a5f1-dc290794df69.png)
+Спектрограмма через CPU
+![Spectrogram_CPU](https://user-images.githubusercontent.com/31400073/204161258-5b1f873c-70f6-4210-b5e1-2280419bd411.png)
+Спектрограмма через GPU
+![Spectrogram_GPU](https://user-images.githubusercontent.com/31400073/204161266-097df819-fd81-4c33-80f7-6dd879088db7.png)
+Вывод в консоль
+![console_no_image](https://user-images.githubusercontent.com/31400073/204161293-088640c9-1319-42f0-b7cf-e96e930ef344.jpg)
