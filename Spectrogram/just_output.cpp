@@ -1,6 +1,6 @@
 #include "main.h"
 
-// Функция для вывода времени в зависимости от колличества нулей
+// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РІС‹РІРѕРґР° РІСЂРµРјРµРЅРё РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РєРѕР»Р»РёС‡РµСЃС‚РІР° РЅСѓР»РµР№
 string outputTime(string title, system_clock::time_point start, system_clock::time_point end)
 {
     if (duration_cast<nanoseconds>(end - start).count() > 3600000000000)
@@ -52,7 +52,7 @@ string outputTime(string title, system_clock::time_point start, system_clock::ti
     return title;
 }
 
-// Функция для красивого оформления
+// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РєСЂР°СЃРёРІРѕРіРѕ РѕС„РѕСЂРјР»РµРЅРёСЏ
 string outlineTime(string title, system_clock::time_point start, system_clock::time_point end)
 {
     string temp = "";
