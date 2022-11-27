@@ -4,4 +4,4 @@
 1. MatMul +
 2. Vector Sum +
 3. Salt and Pepper +
-4. Spectrogram -
+4. Spectrogram +
