@@ -20,12 +20,12 @@ void spectr(int size, vector<double>& data_channel, fftw_complex* in, fftw_compl
     fftw_destroy_plan(p);
 }
 
-// Вычисление спектра периодического сигнала
+// Р’С‹С‡РёСЃР»РµРЅРёРµ СЃРїРµРєС‚СЂР° РїРµСЂРёРѕРґРёС‡РµСЃРєРѕРіРѕ СЃРёРіРЅР°Р»Р°
 void spectrogram_from_signal(wav_header_t& header, int samples_count, vector<double>& data_channel_1, vector<double>& data_channel_2)
 {
     fftw_complex* in, * out;
 
-    int size = 0;  // Задаем размер согласно количеству каналов
+    int size = 0;  // Р—Р°РґР°РµРј СЂР°Р·РјРµСЂ СЃРѕРіР»Р°СЃРЅРѕ РєРѕР»РёС‡РµСЃС‚РІСѓ РєР°РЅР°Р»РѕРІ
 
     if (header.numChannels == 1) size = samples_count;
     else size = samples_count / 2;
@@ -33,9 +33,9 @@ void spectrogram_from_signal(wav_header_t& header, int samples_count, vector<dou
     in = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * size);
     out = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * size);
 
-    vector<double> power_ch1(size);  // Данные с первого канала
-    vector<double> power_ch2(size);  // Данные со второго канала
-    vector<double> frequency;  // Значения по x
+    vector<double> power_ch1(size);  // Р”Р°РЅРЅС‹Рµ СЃ РїРµСЂРІРѕРіРѕ РєР°РЅР°Р»Р°
+    vector<double> power_ch2(size);  // Р”Р°РЅРЅС‹Рµ СЃРѕ РІС‚РѕСЂРѕРіРѕ РєР°РЅР°Р»Р°
+    vector<double> frequency;  // Р—РЅР°С‡РµРЅРёСЏ РїРѕ x
 
     for (int i = 0; i < size; i++)
         frequency.push_back(((double)(header.sampleRate) / (double)(size)) * i);
