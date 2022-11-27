@@ -5,7 +5,7 @@
 #include "device_launch_parameters.h"
 #include <cufft.h>
 
-// Стандартные библиотеки
+// РЎС‚Р°РЅРґР°СЂС‚РЅС‹Рµ Р±РёР±Р»РёРѕС‚РµРєРё
 #include <iostream>
 #include <string.h>
 #include <fstream>
@@ -32,40 +32,40 @@ using namespace cv;
 using namespace std;
 using namespace chrono;
 
-// Параметры
+// РџР°СЂР°РјРµС‚СЂС‹
 
-// Размер выходных изображений
+// Р Р°Р·РјРµСЂ РІС‹С…РѕРґРЅС‹С… РёР·РѕР±СЂР°Р¶РµРЅРёР№
 #define width 1280
 #define height 720
 
-// Расширение выходных изображений
+// Р Р°СЃС€РёСЂРµРЅРёРµ РІС‹С…РѕРґРЅС‹С… РёР·РѕР±СЂР°Р¶РµРЅРёР№
 #define extension ".bmp"
 
-// Параметры отображения
-#define mode 0  // Режим отображения данных (0 - не отображать и не сохранять, 1 - отображать изображения, 2 - сохранять изображения, 3 - отображать и сохранять
+// РџР°СЂР°РјРµС‚СЂС‹ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ
+#define mode 0  // Р РµР¶РёРј РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РґР°РЅРЅС‹С… (0 - РЅРµ РѕС‚РѕР±СЂР°Р¶Р°С‚СЊ Рё РЅРµ СЃРѕС…СЂР°РЅСЏС‚СЊ, 1 - РѕС‚РѕР±СЂР°Р¶Р°С‚СЊ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ, 2 - СЃРѕС…СЂР°РЅСЏС‚СЊ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ, 3 - РѕС‚РѕР±СЂР°Р¶Р°С‚СЊ Рё СЃРѕС…СЂР°РЅСЏС‚СЊ
 
-#define interactive 0  // Режим интерактивных графиков (0 - выключить, 1 - включить)
+#define interactive 0  // Р РµР¶РёРј РёРЅС‚РµСЂР°РєС‚РёРІРЅС‹С… РіСЂР°С„РёРєРѕРІ (0 - РІС‹РєР»СЋС‡РёС‚СЊ, 1 - РІРєР»СЋС‡РёС‚СЊ)
 
-#define multichannel 1  // Режим мультикональности на одном изображении (0 - на разных изображениях, 1 - на одном изображении)
+#define multichannel 1  // Р РµР¶РёРј РјСѓР»СЊС‚РёРєРѕРЅР°Р»СЊРЅРѕСЃС‚Рё РЅР° РѕРґРЅРѕРј РёР·РѕР±СЂР°Р¶РµРЅРёРё (0 - РЅР° СЂР°Р·РЅС‹С… РёР·РѕР±СЂР°Р¶РµРЅРёСЏС…, 1 - РЅР° РѕРґРЅРѕРј РёР·РѕР±СЂР°Р¶РµРЅРёРё)
 
-#define output 0  // Показ изображений (0 - все изображения, 1 - только спектры)
+#define output 0  // РџРѕРєР°Р· РёР·РѕР±СЂР°Р¶РµРЅРёР№ (0 - РІСЃРµ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ, 1 - С‚РѕР»СЊРєРѕ СЃРїРµРєС‚СЂС‹)
 
-#define processor 2  // Использование процессора (0 - CPU, 1 - GPU, 2 - CPU & GPU)
+#define processor 2  // РСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ РїСЂРѕС†РµСЃСЃРѕСЂР° (0 - CPU, 1 - GPU, 2 - CPU & GPU)
 
-// Структуры данных для wavReader
+// РЎС‚СЂСѓРєС‚СѓСЂС‹ РґР°РЅРЅС‹С… РґР»СЏ wavReader
 struct wav_header_t
 {
     char chunkID[4];  // "RIFF" = 0x46464952
     unsigned long chunkSize;  // 36 + SubChunk2Size
     char format[4];  // "WAVE" = 0x45564157
     char subChunk1ID[4];  // "fmt " = 0x20746d66
-    unsigned long subChunk1Size;  // Это размер остальной части подраздела, который следует за этим числом
-    unsigned short audioFormat;  // Значения audioFormat = 1 (т.е. линейное квантование), отличные от 1, указывают на некоторую форму сжатия.
+    unsigned long subChunk1Size;  // Р­С‚Рѕ СЂР°Р·РјРµСЂ РѕСЃС‚Р°Р»СЊРЅРѕР№ С‡Р°СЃС‚Рё РїРѕРґСЂР°Р·РґРµР»Р°, РєРѕС‚РѕСЂС‹Р№ СЃР»РµРґСѓРµС‚ Р·Р° СЌС‚РёРј С‡РёСЃР»РѕРј
+    unsigned short audioFormat;  // Р—РЅР°С‡РµРЅРёСЏ audioFormat = 1 (С‚.Рµ. Р»РёРЅРµР№РЅРѕРµ РєРІР°РЅС‚РѕРІР°РЅРёРµ), РѕС‚Р»РёС‡РЅС‹Рµ РѕС‚ 1, СѓРєР°Р·С‹РІР°СЋС‚ РЅР° РЅРµРєРѕС‚РѕСЂСѓСЋ С„РѕСЂРјСѓ СЃР¶Р°С‚РёСЏ.
     unsigned short numChannels;  // Mono = 1, Stereo = 2
-    unsigned long sampleRate;  // 8000, 44100, и т.д.
+    unsigned long sampleRate;  // 8000, 44100, Рё С‚.Рґ.
     unsigned long byteRate;  // = SampleRate * NumChannels * BitsPerSample/8
     unsigned short blockAlign;  // = NumChannels * BitsPerSample/8
-    unsigned short bitsPerSample;  // 8 bits = 8, 16 bits = 16, и т.д.
+    unsigned short bitsPerSample;  // 8 bits = 8, 16 bits = 16, Рё С‚.Рґ.
 };
 
 struct chunk_t
@@ -75,21 +75,21 @@ struct chunk_t
 };
 
 
-// Прототипы функций для красивого оформления вывода
+// РџСЂРѕС‚РѕС‚РёРїС‹ С„СѓРЅРєС†РёР№ РґР»СЏ РєСЂР°СЃРёРІРѕРіРѕ РѕС„РѕСЂРјР»РµРЅРёСЏ РІС‹РІРѕРґР°
 string outputTime(string title, system_clock::time_point start, system_clock::time_point end);
 string outlineTime(string title, system_clock::time_point start, system_clock::time_point end);
 
-// Прототипы для вывода изображений
+// РџСЂРѕС‚РѕС‚РёРїС‹ РґР»СЏ РІС‹РІРѕРґР° РёР·РѕР±СЂР°Р¶РµРЅРёР№
 void viewGraph(wav_header_t& header, vector<double>& in, vector<double>& out1, vector<double>& out2, string Name, int modeP);
 
-// Прототип функции для считывания даты из wav
+// РџСЂРѕС‚РѕС‚РёРї С„СѓРЅРєС†РёРё РґР»СЏ СЃС‡РёС‚С‹РІР°РЅРёСЏ РґР°С‚С‹ РёР· wav
 void wav_Reader(wav_header_t& header, string name, int& samples_count, vector<double>& out1, vector<double>& out2);
 
-// Прототип функции спектрограммы на CPU
+// РџСЂРѕС‚РѕС‚РёРї С„СѓРЅРєС†РёРё СЃРїРµРєС‚СЂРѕРіСЂР°РјРјС‹ РЅР° CPU
 void spectrogram_from_signal(wav_header_t& header, int samples_count, vector<double>& data_channel_1, vector<double>& data_channel_2);
 
-// Прототип функции спектрограммы на GPU
+// РџСЂРѕС‚РѕС‚РёРї С„СѓРЅРєС†РёРё СЃРїРµРєС‚СЂРѕРіСЂР°РјРјС‹ РЅР° GPU
 void spectrogram_from_signal_cuda(wav_header_t& header, int samples_count, vector<double>& data_channel_1, vector<double>& data_channel_2);
 
-// Прототип функции вывода времени
+// РџСЂРѕС‚РѕС‚РёРї С„СѓРЅРєС†РёРё РІС‹РІРѕРґР° РІСЂРµРјРµРЅРё
 string outputTime(string title, system_clock::time_point start, system_clock::time_point end);
