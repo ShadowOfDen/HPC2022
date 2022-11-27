@@ -7,93 +7,93 @@ void wav_Reader(wav_header_t& header, string name, int& samples_count, vector<do
         name[name.length() - 2] == 'a' &&
         name[name.length() - 1] == 'v')
     {
-        const char* charFileName = name.c_str();  // Преобразуем string в const char
+        const char* charFileName = name.c_str();  // РџСЂРµРѕР±СЂР°Р·СѓРµРј string РІ const char
 
-        FILE* f;  // Переменная для файла
-        errno_t error;  // Переменная для отлова ошибок
-        if (error = fopen_s(&f, charFileName, "rb") == NULL)  // Если файл существует, то открываем его
+        FILE* f;  // РџРµСЂРµРјРµРЅРЅР°СЏ РґР»СЏ С„Р°Р№Р»Р°
+        errno_t error;  // РџРµСЂРµРјРµРЅРЅР°СЏ РґР»СЏ РѕС‚Р»РѕРІР° РѕС€РёР±РѕРє
+        if (error = fopen_s(&f, charFileName, "rb") == NULL)  // Р•СЃР»Рё С„Р°Р№Р» СЃСѓС‰РµСЃС‚РІСѓРµС‚, С‚Рѕ РѕС‚РєСЂС‹РІР°РµРј РµРіРѕ
         {
-            fread(&header, sizeof(header), 1, f);  // Считываем данные файла в структуру
+            fread(&header, sizeof(header), 1, f);  // РЎС‡РёС‚С‹РІР°РµРј РґР°РЅРЅС‹Рµ С„Р°Р№Р»Р° РІ СЃС‚СЂСѓРєС‚СѓСЂСѓ
 
             if (*(unsigned long*)&header.chunkID == 0x46464952 &&
                 *(unsigned long*)&header.format == 0x45564157 &&
-                *(unsigned long*)&header.subChunk1ID == 0x20746d66)  // Проверяем wav файл на нужную структуру (RIFF, WAVE, fmt )
+                *(unsigned long*)&header.subChunk1ID == 0x20746d66)  // РџСЂРѕРІРµСЂСЏРµРј wav С„Р°Р№Р» РЅР° РЅСѓР¶РЅСѓСЋ СЃС‚СЂСѓРєС‚СѓСЂСѓ (RIFF, WAVE, fmt )
             {
-                fseek(f, header.subChunk1Size - 16, SEEK_CUR);  //Пропустить дополнительные байты формата и дополнительные байты формата
+                fseek(f, header.subChunk1Size - 16, SEEK_CUR);  //РџСЂРѕРїСѓСЃС‚РёС‚СЊ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ Р±Р°Р№С‚С‹ С„РѕСЂРјР°С‚Р° Рё РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ Р±Р°Р№С‚С‹ С„РѕСЂРјР°С‚Р°
 
-                chunk_t chunk;  // Создаем объект структуры чанка для данных
-                int k = 0;  // Попытки для счета data
+                chunk_t chunk;  // РЎРѕР·РґР°РµРј РѕР±СЉРµРєС‚ СЃС‚СЂСѓРєС‚СѓСЂС‹ С‡Р°РЅРєР° РґР»СЏ РґР°РЅРЅС‹С…
+                int k = 0;  // РџРѕРїС‹С‚РєРё РґР»СЏ СЃС‡РµС‚Р° data
 
-                while (k < 10)  //Переходим к этим данным
+                while (k < 10)  //РџРµСЂРµС…РѕРґРёРј Рє СЌС‚РёРј РґР°РЅРЅС‹Рј
                 {
-                    fread(&chunk, sizeof(chunk), 1, f);  // Читаем данные даты
-                    if (*(unsigned long*)&chunk.subChunk2ID == 0x61746164) break;  // Если содержится слова дата, то выходим из цикла
-                    fseek(f, chunk.subChunk2Size, SEEK_CUR); // иначе ищем дату дальше
-                    k++;  // Увеличиваем попытку
+                    fread(&chunk, sizeof(chunk), 1, f);  // Р§РёС‚Р°РµРј РґР°РЅРЅС‹Рµ РґР°С‚С‹
+                    if (*(unsigned long*)&chunk.subChunk2ID == 0x61746164) break;  // Р•СЃР»Рё СЃРѕРґРµСЂР¶РёС‚СЃСЏ СЃР»РѕРІР° РґР°С‚Р°, С‚Рѕ РІС‹С…РѕРґРёРј РёР· С†РёРєР»Р°
+                    fseek(f, chunk.subChunk2Size, SEEK_CUR); // РёРЅР°С‡Рµ РёС‰РµРј РґР°С‚Сѓ РґР°Р»СЊС€Рµ
+                    k++;  // РЈРІРµР»РёС‡РёРІР°РµРј РїРѕРїС‹С‚РєСѓ
                 }
 
-                int sample_size = header.bitsPerSample / 8;  // Число данных в data
-                samples_count = chunk.subChunk2Size * 8 / header.bitsPerSample;  // Размер массива data
+                int sample_size = header.bitsPerSample / 8;  // Р§РёСЃР»Рѕ РґР°РЅРЅС‹С… РІ data
+                samples_count = chunk.subChunk2Size * 8 / header.bitsPerSample;  // Р Р°Р·РјРµСЂ РјР°СЃСЃРёРІР° data
 
-                unsigned long* data = new unsigned long[samples_count];  // Создаем динамический массив под data
-                memset(data, 0, sizeof(unsigned long) * samples_count);  // Заполняем изначальное простарнсво в памяти нулями
+                unsigned long* data = new unsigned long[samples_count];  // РЎРѕР·РґР°РµРј РґРёРЅР°РјРёС‡РµСЃРєРёР№ РјР°СЃСЃРёРІ РїРѕРґ data
+                memset(data, 0, sizeof(unsigned long) * samples_count);  // Р—Р°РїРѕР»РЅСЏРµРј РёР·РЅР°С‡Р°Р»СЊРЅРѕРµ РїСЂРѕСЃС‚Р°СЂРЅСЃРІРѕ РІ РїР°РјСЏС‚Рё РЅСѓР»СЏРјРё
 
                 for (int i = 0; i < samples_count; i++)
                 {
-                    fread(&data[i], sample_size, 1, f);  // Считываем данные data
+                    fread(&data[i], sample_size, 1, f);  // РЎС‡РёС‚С‹РІР°РµРј РґР°РЅРЅС‹Рµ data
                 }
 
-                vector<double> x;  // Вектор значений x
+                vector<double> x;  // Р’РµРєС‚РѕСЂ Р·РЅР°С‡РµРЅРёР№ x
 
-                if (header.numChannels == 1)  // Если канал один
+                if (header.numChannels == 1)  // Р•СЃР»Рё РєР°РЅР°Р» РѕРґРёРЅ
                 {
                     for (int i = 0, k = 0; i < samples_count; i++, k++)
                     {
                         //for 16 bits per sample only
-                        double step_1 = ((double)data[i] - 0x8000) / 0x8000;  // Переводим значение из 16-ричной системы
-                        double step_2 = step_1 > 0.0 ? step_1 - 1.0 : step_1 + 1.0;  // Нормализируем
-                        double step_3 = step_2 * 32760;  // Возвращаем по максимальной амплитуде
+                        double step_1 = ((double)data[i] - 0x8000) / 0x8000;  // РџРµСЂРµРІРѕРґРёРј Р·РЅР°С‡РµРЅРёРµ РёР· 16-СЂРёС‡РЅРѕР№ СЃРёСЃС‚РµРјС‹
+                        double step_2 = step_1 > 0.0 ? step_1 - 1.0 : step_1 + 1.0;  // РќРѕСЂРјР°Р»РёР·РёСЂСѓРµРј
+                        double step_3 = step_2 * 32760;  // Р’РѕР·РІСЂР°С‰Р°РµРј РїРѕ РјР°РєСЃРёРјР°Р»СЊРЅРѕР№ Р°РјРїР»РёС‚СѓРґРµ
 
-                        out1.push_back(step_3);  // Записываем значение в вектор
+                        out1.push_back(step_3);  // Р—Р°РїРёСЃС‹РІР°РµРј Р·РЅР°С‡РµРЅРёРµ РІ РІРµРєС‚РѕСЂ
 
-                        x.push_back((double)(k) / (double)(header.sampleRate));  // Значение по оси Х (секунды)
+                        x.push_back((double)(k) / (double)(header.sampleRate));  // Р—РЅР°С‡РµРЅРёРµ РїРѕ РѕСЃРё РҐ (СЃРµРєСѓРЅРґС‹)
                     }
 
-                    if (output == 0) viewGraph(header, x, out1, out2, "SoundGraph", 0);  // Отрисовываем графики
+                    if (output == 0) viewGraph(header, x, out1, out2, "SoundGraph", 0);  // РћС‚СЂРёСЃРѕРІС‹РІР°РµРј РіСЂР°С„РёРєРё
                 }
-                else  // Если канала два
+                else  // Р•СЃР»Рё РєР°РЅР°Р»Р° РґРІР°
                 {
 
                     for (int i = 0, k = 0; i < samples_count - 1; i++, k++)
                     {
-                        double step_1 = ((double)data[i] - 0x8000) / 0x8000;  // Переводим значение из 16-ричной системы
-                        double step_2 = step_1 > 0.0 ? step_1 - 1.0 : step_1 + 1.0;  // Нормализируем
-                        double step_3 = step_2 * 32760;  // Возвращаем по максимальной амплитуде
+                        double step_1 = ((double)data[i] - 0x8000) / 0x8000;  // РџРµСЂРµРІРѕРґРёРј Р·РЅР°С‡РµРЅРёРµ РёР· 16-СЂРёС‡РЅРѕР№ СЃРёСЃС‚РµРјС‹
+                        double step_2 = step_1 > 0.0 ? step_1 - 1.0 : step_1 + 1.0;  // РќРѕСЂРјР°Р»РёР·РёСЂСѓРµРј
+                        double step_3 = step_2 * 32760;  // Р’РѕР·РІСЂР°С‰Р°РµРј РїРѕ РјР°РєСЃРёРјР°Р»СЊРЅРѕР№ Р°РјРїР»РёС‚СѓРґРµ
 
                         out1.push_back(step_3);
 
-                        step_1 = ((double)data[i + 1] - 0x8000) / 0x8000;  // Переводим значение из 16-ричной системы
-                        step_2 = step_1 > 0.0 ? step_1 - 1.0 : step_1 + 1.0;  // Нормализируем
-                        step_3 = step_2 * 32760;  // Возвращаем по максимальной амплитуде
+                        step_1 = ((double)data[i + 1] - 0x8000) / 0x8000;  // РџРµСЂРµРІРѕРґРёРј Р·РЅР°С‡РµРЅРёРµ РёР· 16-СЂРёС‡РЅРѕР№ СЃРёСЃС‚РµРјС‹
+                        step_2 = step_1 > 0.0 ? step_1 - 1.0 : step_1 + 1.0;  // РќРѕСЂРјР°Р»РёР·РёСЂСѓРµРј
+                        step_3 = step_2 * 32760;  // Р’РѕР·РІСЂР°С‰Р°РµРј РїРѕ РјР°РєСЃРёРјР°Р»СЊРЅРѕР№ Р°РјРїР»РёС‚СѓРґРµ
 
                         out2.push_back(step_3);
 
-                        x.push_back((double)(k) / (double)(header.sampleRate));  // Значение по оси Х (секунды)
+                        x.push_back((double)(k) / (double)(header.sampleRate));  // Р—РЅР°С‡РµРЅРёРµ РїРѕ РѕСЃРё РҐ (СЃРµРєСѓРЅРґС‹)
                         i++;
                     }
 
-                    if (output == 0) viewGraph(header, x, out1, out2, "SoundGraph", 0);  // Отрисовываем графики
+                    if (output == 0) viewGraph(header, x, out1, out2, "SoundGraph", 0);  // РћС‚СЂРёСЃРѕРІС‹РІР°РµРј РіСЂР°С„РёРєРё
 
                 }
 
-                delete[] data;  // Очищаем память
+                delete[] data;  // РћС‡РёС‰Р°РµРј РїР°РјСЏС‚СЊ
             }
             else
             {
                 cout << "Error 03: The file contains an incorrect structure!!!" << endl;
             }
 
-            fclose(f);  // Закрываем файл
+            fclose(f);  // Р—Р°РєСЂС‹РІР°РµРј С„Р°Р№Р»
         }
         else
         {
