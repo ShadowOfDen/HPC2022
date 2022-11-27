@@ -8,66 +8,66 @@ __global__ void cufftMultiply(cufftComplex* idata, cufftComplex* odata, int size
 
     if (threadID < size)
     {
-        odata[threadID].x = sqrt(idata[threadID].x * idata[threadID].x + idata[threadID].y * idata[threadID].y);  // Преобразовываем данные в мощность
+        odata[threadID].x = sqrt(idata[threadID].x * idata[threadID].x + idata[threadID].y * idata[threadID].y);  // РџСЂРµРѕР±СЂР°Р·РѕРІС‹РІР°РµРј РґР°РЅРЅС‹Рµ РІ РјРѕС‰РЅРѕСЃС‚СЊ
     }
 }
 
 
 void spectr(int size, vector<double>& data_channel, cufftComplex* data_Host, cufftComplex* data_dev, vector<double>& power)
 {
-    cufftHandle plan;  // Создаем дескриптор cuFFT
+    cufftHandle plan;  // РЎРѕР·РґР°РµРј РґРµСЃРєСЂРёРїС‚РѕСЂ cuFFT
 
-    // Исходные данные
+    // РСЃС…РѕРґРЅС‹Рµ РґР°РЅРЅС‹Рµ
     for (int i = 0; i < size; i++)
     {
         data_Host[i].x = data_channel[i];
         data_Host[i].y = (double)0;
     }
 
-    dim3 dimBlock(BLOCK_SIZE); // блок потока
-    dim3 dimGrid((size + BLOCK_SIZE - 1) / dimBlock.x); // сетка потоков
+    dim3 dimBlock(BLOCK_SIZE); // Р±Р»РѕРє РїРѕС‚РѕРєР°
+    dim3 dimGrid((size + BLOCK_SIZE - 1) / dimBlock.x); // СЃРµС‚РєР° РїРѕС‚РѕРєРѕРІ
 
     cufftPlan1d(&plan, size, CUFFT_C2C, 1);
 
-    cudaMemset(data_dev, 0, sizeof(cufftComplex) * size);  // Первоначально заполняем 0
-    cudaMemcpy(data_dev, data_Host, size * sizeof(cufftComplex), cudaMemcpyHostToDevice);  // Копируем из памяти хоста в память устройства
+    cudaMemset(data_dev, 0, sizeof(cufftComplex) * size);  // РџРµСЂРІРѕРЅР°С‡Р°Р»СЊРЅРѕ Р·Р°РїРѕР»РЅСЏРµРј 0
+    cudaMemcpy(data_dev, data_Host, size * sizeof(cufftComplex), cudaMemcpyHostToDevice);  // РљРѕРїРёСЂСѓРµРј РёР· РїР°РјСЏС‚Рё С…РѕСЃС‚Р° РІ РїР°РјСЏС‚СЊ СѓСЃС‚СЂРѕР№СЃС‚РІР°
 
-    cufftExecC2C(plan, data_dev, data_dev, CUFFT_FORWARD);  // Выполняем cuFFT, положительное преобразование
+    cufftExecC2C(plan, data_dev, data_dev, CUFFT_FORWARD);  // Р’С‹РїРѕР»РЅСЏРµРј cuFFT, РїРѕР»РѕР¶РёС‚РµР»СЊРЅРѕРµ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ
     cufftMultiply << <dimGrid, dimBlock >> > (data_dev, data_dev, size);
-    cudaMemcpy(data_Host, data_dev, size * sizeof(cufftComplex), cudaMemcpyDeviceToHost);  // Копируем из памяти устройства в память хоста
+    cudaMemcpy(data_Host, data_dev, size * sizeof(cufftComplex), cudaMemcpyDeviceToHost);  // РљРѕРїРёСЂСѓРµРј РёР· РїР°РјСЏС‚Рё СѓСЃС‚СЂРѕР№СЃС‚РІР° РІ РїР°РјСЏС‚СЊ С…РѕСЃС‚Р°
 
     for (int i = 0; i < size; i++)
-        //power[i] = sqrt(data_Host[i].x * data_Host[i].x + data_Host[i].y * data_Host[i].y);  // Преобразовываем данные в мощность
-        power[i] = data_Host[i].x;  // Преобразовываем данные в мощность
+        //power[i] = sqrt(data_Host[i].x * data_Host[i].x + data_Host[i].y * data_Host[i].y);  // РџСЂРµРѕР±СЂР°Р·РѕРІС‹РІР°РµРј РґР°РЅРЅС‹Рµ РІ РјРѕС‰РЅРѕСЃС‚СЊ
+        power[i] = data_Host[i].x;  // РџСЂРµРѕР±СЂР°Р·РѕРІС‹РІР°РµРј РґР°РЅРЅС‹Рµ РІ РјРѕС‰РЅРѕСЃС‚СЊ
 
-    cufftDestroy(plan);  // Уничтожаем дескриптор
+    cufftDestroy(plan);  // РЈРЅРёС‡С‚РѕР¶Р°РµРј РґРµСЃРєСЂРёРїС‚РѕСЂ
 }
 
 void spectrogram_from_signal_cuda(wav_header_t& header, int samples_count, vector<double>& data_channel_1, vector<double>& data_channel_2)
 {
-    int size = 0;  // Задаем размер согласно количеству каналов
+    int size = 0;  // Р—Р°РґР°РµРј СЂР°Р·РјРµСЂ СЃРѕРіР»Р°СЃРЅРѕ РєРѕР»РёС‡РµСЃС‚РІСѓ РєР°РЅР°Р»РѕРІ
 
     if (header.numChannels == 1) size = samples_count;
     else size = samples_count / 2;
 
-    vector<double> power_ch1(size);  // Данные с первого канала
-    vector<double> power_ch2(size);  // Данные со второго канала
-    vector<double> frequency;  // Значения по x
+    vector<double> power_ch1(size);  // Р”Р°РЅРЅС‹Рµ СЃ РїРµСЂРІРѕРіРѕ РєР°РЅР°Р»Р°
+    vector<double> power_ch2(size);  // Р”Р°РЅРЅС‹Рµ СЃРѕ РІС‚РѕСЂРѕРіРѕ РєР°РЅР°Р»Р°
+    vector<double> frequency;  // Р—РЅР°С‡РµРЅРёСЏ РїРѕ x
 
     for (int i = 0; i < size; i++)
         frequency.push_back(((double)(header.sampleRate) / (double)(size)) * i);
 
-    cufftComplex* data_dev; // Данные на стороне устройства
-    cufftComplex* data_Host = (cufftComplex*)malloc(size * sizeof(cufftComplex));  // Данные на стороне хоста
+    cufftComplex* data_dev; // Р”Р°РЅРЅС‹Рµ РЅР° СЃС‚РѕСЂРѕРЅРµ СѓСЃС‚СЂРѕР№СЃС‚РІР°
+    cufftComplex* data_Host = (cufftComplex*)malloc(size * sizeof(cufftComplex));  // Р”Р°РЅРЅС‹Рµ РЅР° СЃС‚РѕСЂРѕРЅРµ С…РѕСЃС‚Р°
 
-    cudaMalloc((void**)&data_dev, sizeof(cufftComplex) * size);  // Выделяем память на устройстве
+    cudaMalloc((void**)&data_dev, sizeof(cufftComplex) * size);  // Р’С‹РґРµР»СЏРµРј РїР°РјСЏС‚СЊ РЅР° СѓСЃС‚СЂРѕР№СЃС‚РІРµ
 
     spectr(size, data_channel_1, data_Host, data_dev, power_ch1);
     spectr(size, data_channel_2, data_Host, data_dev, power_ch2);
 
     viewGraph(header, frequency, power_ch1, power_ch2, "Spectrogram", 2);
 
-    cudaFree(data_dev); // освободить место
-    //cudaFree(data_Host); // освободить место
-    free(data_Host);  // освободить место
+    cudaFree(data_dev); // РѕСЃРІРѕР±РѕРґРёС‚СЊ РјРµСЃС‚Рѕ
+    //cudaFree(data_Host); // РѕСЃРІРѕР±РѕРґРёС‚СЊ РјРµСЃС‚Рѕ
+    free(data_Host);  // РѕСЃРІРѕР±РѕРґРёС‚СЊ РјРµСЃС‚Рѕ
 }
